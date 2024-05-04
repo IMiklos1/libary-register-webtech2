@@ -98,9 +98,9 @@ export class ExpiredReturnComponent implements OnInit {
     let selectedDays = this.daysControl.value;
 
     this.itemsWithRenter = this.items
-      .filter(item => item.renterId > 0)
+      .filter(item => item.renterId)
       .map(item => {
-        const renter = this.users.find(user => +user.id === +item.renterId) || null;
+        const renter = this.users.find(user => user._id === item.renterId) || null;
 
         let itemWithRenter: ItemWithRenterDto = {
           ...item,

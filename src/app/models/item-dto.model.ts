@@ -1,11 +1,11 @@
 export interface ItemDto {
-    id:number;
+    _id:string;
     number:string;
     type:string;
     author:string;
     title:string;
     procurementDate:Date;
     status:string;
-    renterId:number;
+    renterId:string;
     startRent:Date;
 }

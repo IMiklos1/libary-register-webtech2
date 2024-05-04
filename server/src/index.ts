@@ -1,5 +1,5 @@
 import { AuthUserController } from "./controller/auth-user.controller";
-import { UserController } from "./controller/user.controller";
+
 import { connectToMongoDB } from "./data-source";
 import { AuthUser } from "./entity/AuthUser";
 import { Item } from "./entity/Item"

@@ -161,7 +161,7 @@ export class RegisterComponent implements OnInit {
 
   getUserRentCount(selectedUser: UserDto): number {
     if (!selectedUser) return 0;
-    return this.items.filter(item => +item.renterId === +selectedUser.id).length;
+    return this.items.filter(item => +item.renterId === +selectedUser._id).length;
   }
   onUserInput() {
     if (!this.userSearchControl.value) {
@@ -222,9 +222,9 @@ export class RegisterComponent implements OnInit {
       return;
     }
     this.itemsWithRenter = this.items
-      .filter(item => item.renterId > 0)
+      .filter(item => item.renterId)
       .map(item => {
-        const renter = this.users.find(user => +user.id === +item.renterId) || null;
+        const renter = this.users.find(user => +user._id === +item.renterId) || null;
 
         const itemWithRenter: ItemWithRenterDto = {
           ...item,
@@ -248,14 +248,14 @@ export class RegisterComponent implements OnInit {
     }
 
     // Check if the chosen user has more than 6 items
-    let userItemsCount: number = this.items.filter(item => item.renterId === chosenUser.id).length;
+    let userItemsCount: number = this.items.filter(item => item.renterId === chosenUser._id).length;
     if (userItemsCount >= 6) {
       console.error('The selected user already has 6 or more items rented.');
       return;
     }
 
     // Update the item data
-    updateItem.renterId = chosenUser.id;
+    updateItem.renterId = chosenUser._id;
     updateItem.startRent = new Date();
     updateItem.status = "reserved";
 
@@ -282,7 +282,7 @@ export class RegisterComponent implements OnInit {
       console.log("Please select item to set free!");
       return;
     }
-    itemToSetFree.renterId = 0;
+    itemToSetFree.renterId = '';
     itemToSetFree.status = "Free";
     itemToSetFree.startRent = new Date(0);
 

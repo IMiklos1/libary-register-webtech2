@@ -52,14 +52,14 @@ export class ItemsComponent {
     this.items = [];
     this.getItems();
     this.itemForm = this.formBuilder.group<ItemDto>({
-      id: 0,
+      _id: '',
       number: '',
       type: '',
       author: '',
       title: '',
       procurementDate: new Date(0),
       status: '',
-      renterId: 0,
+      renterId: '',
       startRent: new Date(0),
     });
 
@@ -118,9 +118,9 @@ export class ItemsComponent {
   async discardItem() {
 
     console.log(this.discardId);
-    if (this.items.find(u => u.id === +this.discardId)) {
+    if (this.items.find(u => u._id === this.discardId)) {
 
-      this.updateItem = this.items.find(u => u.id === +this.discardId);
+      this.updateItem = this.items.find(u => u._id === this.discardId);
       this.updateItem.status = "scrapped";
 
       console.log(this.updateItem);
