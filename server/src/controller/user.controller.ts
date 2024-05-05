@@ -1,22 +1,66 @@
-import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
+import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { User } from '../entity/User';
-import { mongoService } from './base.controller';
+import { MongoService } from './base.controller';
 
-export async function createUser() {
-    await mongoService.createCollection("user");
-}
-export async function insertUser(user: User) {
-    await mongoService.insertOneCollection("user", user);
-}
+const mongoService = new MongoService("user");
 
-export async function listUser(): Promise<User[]> {
-    return await mongoService.listCollection("user", {}, {});
-}
-
-export async function updateUser(user: User) {
-    await mongoService.updateOneCollection("user", { _id: new ObjectId(user._id) }, { $set: { status: user.status } });
+export async function createUser(req: Request, res: Response): Promise<void> {
+    try {
+        await mongoService.createCollection(req, res);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).send('Internal server error');
+    }
 }
 
-export async function deleteUser(userId: string) {
-    await mongoService.deleteOneCollection("user", { _id: new ObjectId(userId) });
+export async function insertUser(req: Request, res: Response): Promise<void> {
+    try {
+        delete req.body._id;
+        const { id, name, address, phone, idCard, status } = req.body;
+        const user = {
+           id, name, address, phone, idCard, status
+        };
+        await mongoService.insertOneCollection(user, res);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).send('Internal server error');
+    }
+}
+
+export async function listUser(req: Request, res: Response): Promise<void> {
+    try {
+        await mongoService.listCollection(req, res);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).send('Internal server error');
+    }
+}
+
+export async function updateUser(req: Request, res: Response): Promise<void> {
+    try {
+        delete req.body._id;
+        console.log(req.body);
+        const { id, name, address, phone, idCard, status } = req.body;
+        const user = {
+           id, name, address, phone, idCard, status
+        };
+        await mongoService.updateOneCollection(user, res);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).send('Internal server error');
+    }
+}
+
+export async function deleteUser(req: Request, res: Response): Promise<void> {
+    try {
+        const { id, name, address, phone, idCard, status } = req.body;
+        const user = {
+           id, name, address, phone, idCard, status
+        };
+        await mongoService.deleteOneCollection(user, res);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).send('Internal server error');
+    }
 }

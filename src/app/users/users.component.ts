@@ -49,6 +49,7 @@ import { AuthService } from '../services/auth.service';
     this.getUsers();
     this.userForm = this.formBuilder.group<UserDto>({
       _id: '',
+      id: '',
       name: '',
       address: '',
       phone: '',
@@ -100,6 +101,7 @@ import { AuthService } from '../services/auth.service';
       console.log(this.userForm);
       const userData: UserDto = this.userForm.value;
       userData.status = "active"
+      userData.id = (+this.users.reduce((prev, current) => (prev.id > current.id ? prev : current)).id + 1).toString();
       this.userService.create(userData).subscribe({
         next: (userCreated) => {
           this.dataSource.data = this.users
@@ -117,9 +119,9 @@ import { AuthService } from '../services/auth.service';
   async deleteUser(){
     
     console.log(this.deleteId);
-    if(this.users.find(u => u._id === this.deleteId)){
+    if(this.users.find(u => u.id === this.deleteId)){
 
-      this.updateUser = this.users.find(u => u._id === this.deleteId);
+      this.updateUser = this.users.find(u => u.id === this.deleteId);
       this.updateUser.status = "inactive";
 
       console.log(this.updateUser);

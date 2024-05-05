@@ -29,7 +29,7 @@ export class UserService {
     return this.http.put<UserDto>(this.path + '/api/user', user);
   }
 
-  delete(id: number) {
-    return this.http.delete(this.path + '/api/user/' + id); 
+  delete(user: UserDto) {
+    return this.http.delete(this.path + '/api/user/'); 
   }
 }

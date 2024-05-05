@@ -1,157 +1,104 @@
-import { URL, DATABASENAME } from "../configuration";
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://admin:admin@libaryregister.pvoei77.mongodb.net/?retryWrites=true&w=majority&appName=LibaryRegister";
+import { Response } from 'express'; // Assuming you're using Express.js for handling HTTP objects
+import { MongoClient } from 'mongodb';
+import { User } from '../entity/User';
+import { Request } from 'express-jwt';
+
+const uri = "mongodb+srv://admin:admin@libaryregister.pvoei77.mongodb.net/";
 const client = new MongoClient(uri);
 const databaseName: string = "LibaryRegister";
-const collectionName: string = "auth-user";
-class MongoService {
-    constructor() {}
 
-
-    createCollection(collectionName: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-            .then(db => {
-                var dbo = db.db(databaseName);
-                return dbo.createCollection(collectionName).then((result) => {
-                    console.log(`Collection ${collectionName} created!`);
-                    db.close();
-                    resolve();
-                }, (error) => {
-                    throw error;
-                })
-                .catch((error) => {
-                    db.close();
-                    reject(error.message);
-                })
-                .finally(() => {
-                    //db.close();
-                })
-            }, (error) => {
-                console.log(error);
-                reject(error.message);
-            });
-        });
+export class MongoService {
+    constructor(private collection:string) { 
+        this.collection = collection
     }
 
-    insertOneCollection(collectionName: string, collection: any): Promise<void> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-                .then((db) => {
-                    var dbo = db.db(databaseName);
-                    return dbo.collection(collectionName).insertOne(collection, {
-                        useUnifiedTopology: true,
-                        useNewUrlParser: true,
-                    }).then((collection) => {
-                        if (collection.insertedCount != 1) {
-                            throw new Error("Nem sikerült a felvitel");
-                        }
-                        db.close();
-                        resolve();
-                    }).catch(err => {
-                        console.log(`DB Connection Error: ${err.message}`);
-                        db.close();
-                        reject(err.message);
-                    }).finally(() => {
-                        console.log('Close DB');
-                        db.close();
-                    })
-                });
-        });
+    async createCollection(object: any, res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            await dbo.createCollection(this.collection);
+            console.log(`Collection ${this.collection} created!`);
+            res.status(200).send('Collection created successfully');
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error creating collection');
+        } finally {
+            await client.close();
+        }
     }
 
-    listCollection(collectionName: string, query1: any, query2: any): Promise<any> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-                .then((db) => {
-                    var dbo = db.db(databaseName);
-
-                    return dbo.collection(collectionName).find(query1, query2).toArray().then((collection) => {
-                        db.close();
-                        resolve(collection);
-                    }).catch(err => {
-                        console.log(`DB Connection Error: ${err.message}`);
-                        db.close();
-                        reject(err.message);
-                    }).finally(() => {
-                        console.log('Close DB');
-                        db.close();
-                    })
-                });
-        });
+    async insertOneCollection(object: any, res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            console.log(object);
+            const result = await dbo.collection(this.collection).insertOne(object);
+            console.log('Inserted document:', result.insertedId);
+            res.status(200).send('Document inserted successfully');
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error inserting document');
+        } finally {
+            await client.close();
+        }
     }
 
-    updateOneCollection(collectionName: string, query: any, newValues: any): Promise<void> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-                .then((db) => {
-                    var dbo = db.db(databaseName);
-                    console.log(newValues);
-                    return dbo.collection(collectionName).updateOne(query, newValues).then((collection) => {
-                        console.log(collection);
-                        if (collection.modifiedCount == 0) {
-                            throw new Error("Nem sikerült a módosítás");
-                        }
-                        db.close();
-                        resolve();
-                    }).catch(err => {
-                        console.log(`DB Error: ${err.message}`);
-                        //error = err;
-                        db.close();
-                        reject(err.message);
-                    }).finally(() => {
-                        console.log('Close DB');
-                        db.close();
-                    })
-                });
-        });
+    async listCollection(req: Request, res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            const collection = await dbo.collection(this.collection).find().toArray();
+            res.status(200).json(collection);
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error listing collection');
+        } finally {
+            await client.close();
+        }
     }
 
-    deleteOneCollection(collectionName: string, query: any): Promise<void> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-                .then((db) => {
-                    var dbo = db.db(databaseName);
-                    return dbo.collection(collectionName).deleteOne(query).then((collection) => {
-                        if (collection.deletedCount == 0) {
-                            throw new Error("Nem sikerült a törlés");
-                        }
-                        db.close();
-                        resolve();
-                    }).catch(err => {
-                        console.log(`DB Connection Error: ${err.message}`);
-                        db.close();
-                        reject(err.message);
-                    }).finally(() => {
-                        console.log('Close DB');
-                        db.close();
-                    })
-                });
-        });
+    async updateOneCollection(object: any, res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            const result = await dbo.collection(this.collection).updateOne({id: object.id},{$set: object});
+            console.log('Updated document:', result.modifiedCount);
+            res.status(200).send('Document updated successfully');
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error updating document');
+        } finally {
+            await client.close();
+        }
     }
 
-    deleteCollection(collectionName: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            client.connect()
-                .then((db) => {
-                    var dbo = db.db(databaseName);
-                    return dbo.collection(collectionName).drop().then((collection) => {
-                        if (collection.deletedCount == 0) {
-                            throw new Error("Nem sikerült a törlés");
-                        }
-                        db.close();
-                        resolve(collection);
-                    }).catch(err => {
-                        console.log(`DB Connection Error: ${err.message}`);
-                        db.close();
-                        reject(err.message);
-                    }).finally(() => {
-                        console.log('Close DB');
-                        db.close();
-                    })
-                });
-        });
+    async deleteOneCollection(object: any, res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            const result = await dbo.collection(this.collection).deleteOne(object);
+            console.log('Deleted document:', result.deletedCount);
+            res.status(200).send('Document deleted successfully');
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error deleting document');
+        } finally {
+            await client.close();
+        }
+    }
+
+    async deleteCollection(res: Response): Promise<void> {
+        try {
+            await client.connect();
+            const dbo = client.db(databaseName);
+            await dbo.collection(this.collection).drop();
+            console.log(`Collection ${this.collection} dropped!`);
+            res.status(200).send('Collection deleted successfully');
+        } catch (error) {
+            console.error('Error:', error.message);
+            res.status(500).send('Error deleting collection');
+        } finally {
+            await client.close();
+        }
     }
 }
-
-export let mongoService = new MongoService();

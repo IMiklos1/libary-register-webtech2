@@ -1,7 +1,7 @@
 import express = require('express');
 import { AuthUserController } from './controller/auth-user.controller';
 import { createUser, deleteUser, insertUser, listUser, updateUser } from './controller/user.controller';
-import { deleteitem, insertitem, listitem, updateitem } from './controller/item.controller';
+import { deleteItem, insertItem, listItem, updateItem } from './controller/item.controller';
 
 export function getRouter() {
     const router = express.Router();
@@ -9,14 +9,14 @@ export function getRouter() {
     router.get('/user', listUser);
     router.get('/user/:id', );
     router.post('/user', insertUser);
-    router.put('/user/:id', updateUser);
+    router.put('/user', updateUser);
     router.delete('/user/:id', deleteUser);
 
-    router.get('/item', listitem);
+    router.get('/item', listItem);
     router.get('/item/:id', );
-    router.post('/item', insertitem);
-    router.put('/item/:id', updateitem);
-    router.delete('/item/:id', deleteitem);
+    router.post('/item', insertItem);
+    router.put('/item/:id', updateItem);
+    router.delete('/item/:id', deleteItem);
 
     const authUserController = new AuthUserController();
     router.post('/signup', authUserController.create);
