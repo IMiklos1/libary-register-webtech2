@@ -17,6 +17,7 @@ import { map, startWith } from 'rxjs/operators';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AuthService } from '../services/auth.service';
+import { updateUser } from '../../../server/src/controller/user.controller';
 
 @Component({
   selector: 'app-register',
@@ -39,7 +40,6 @@ import { AuthService } from '../services/auth.service';
 export class RegisterComponent implements OnInit {
 
   displayedColumns: string[] = [
-    'id',
     'number',
     'type',
     'author',
@@ -60,17 +60,17 @@ export class RegisterComponent implements OnInit {
   userSearchControl = new FormControl();
   addRentingUser: UserDto[];
   filteredUsers: Observable<UserDto[]> = new Observable<UserDto[]>;
-  
+
   itemSearchControl = new FormControl();
   addRentedItem: ItemDto[];
   filteredItems: Observable<ItemDto[]> = new Observable<ItemDto[]>;
-  
+
 
   reservedItemSearchControl = new FormControl();
   reservedItems: ItemDto[];
   filteredRecivedItems: Observable<ItemDto[]> = new Observable<ItemDto[]>;
 
-  constructor(private registerService: RegisterService, private userService: UserService, private itemService: ItemService, public authService:AuthService) {
+  constructor(private registerService: RegisterService, private userService: UserService, private itemService: ItemService, public authService: AuthService) {
     this.users = [];
     this.items = [];
     this.getUsers();
@@ -86,7 +86,7 @@ export class RegisterComponent implements OnInit {
     this.resetOptions();
   }
 
-  resetOptions(){
+  resetOptions() {
     this.filteredUsers = this.userSearchControl.valueChanges.pipe(
       startWith(''),
       map(value => this._userFilter(value))
@@ -99,7 +99,7 @@ export class RegisterComponent implements OnInit {
 
     this.filteredRecivedItems = this.reservedItemSearchControl.valueChanges.pipe(
       startWith(''),
-      map(value => this._reservedItemFilter(value)) 
+      map(value => this._reservedItemFilter(value))
     );
   }
 
@@ -214,7 +214,7 @@ export class RegisterComponent implements OnInit {
           this.fetchData();
           this.resetOptions();
         }
-  });
+      });
   }
 
   fetchData(): void {
@@ -224,7 +224,7 @@ export class RegisterComponent implements OnInit {
     this.itemsWithRenter = this.items
       .filter(item => item.renterId)
       .map(item => {
-        const renter = this.users.find(user => +user._id === +item.renterId) || null;
+        const renter = this.users.find(user => user._id === item.renterId) || null;
 
         const itemWithRenter: ItemWithRenterDto = {
           ...item,
@@ -240,7 +240,7 @@ export class RegisterComponent implements OnInit {
   addNewRent() {
     let updateItem: ItemDto = this.itemSearchControl.value;
     let chosenUser: UserDto = this.userSearchControl.value;
-
+    console.log(updateItem);
     // Check if both item and user are selected
     if (!updateItem || !chosenUser) {
       console.error('Please select both a user and an item.');
@@ -262,23 +262,20 @@ export class RegisterComponent implements OnInit {
     console.log('Updating item:', updateItem);
 
     // Call the service to update the item
-    this.itemService.update(updateItem).subscribe(
-      () => {
+    this.itemService.update(updateItem).subscribe({
+      next: (updatedItem) => {
         console.log('Item updated successfully.');
         this.getItems();
-      },
-      (error) => {
-        console.error('Error updating item:', error);
       }
-      );
-      this.fetchData();
+    });
+    this.fetchData();
     this.itemSearchControl.setValue(null);
     this.userSearchControl.setValue(null);
   }
 
-  recivedItem(){
+  recivedItem() {
     let itemToSetFree: ItemDto = this.reservedItemSearchControl.value;
-    if(!itemToSetFree){
+    if (!itemToSetFree) {
       console.log("Please select item to set free!");
       return;
     }
@@ -287,7 +284,7 @@ export class RegisterComponent implements OnInit {
     itemToSetFree.startRent = new Date(0);
 
     this.itemService.update(itemToSetFree).subscribe({
-      next:() => {
+      next: () => {
         console.log('Item updated successfully.');
         this.getItems();
       }

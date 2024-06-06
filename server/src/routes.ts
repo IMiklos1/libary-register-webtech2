@@ -1,6 +1,6 @@
 import express = require('express');
 import { AuthUserController } from './controller/auth-user.controller';
-import { createUser, deleteUser, insertUser, listUser, updateUser } from './controller/user.controller';
+import { deleteUser, insertUser, listUser, updateUser } from './controller/user.controller';
 import { deleteItem, insertItem, listItem, updateItem } from './controller/item.controller';
 
 export function getRouter() {
@@ -15,7 +15,7 @@ export function getRouter() {
     router.get('/item', listItem);
     router.get('/item/:id', );
     router.post('/item', insertItem);
-    router.put('/item/:id', updateItem);
+    router.put('/item', updateItem);
     router.delete('/item/:id', deleteItem);
 
     const authUserController = new AuthUserController();

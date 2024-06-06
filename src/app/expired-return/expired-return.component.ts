@@ -127,7 +127,7 @@ export class ExpiredReturnComponent implements OnInit {
     let differenceInMilliseconds = currentDate.getTime() - dateToCheckObj.getTime();
     let daysDifference = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
 
-    return Math.abs(daysDifference);
+    return daysDifference;
   }    
     
 }

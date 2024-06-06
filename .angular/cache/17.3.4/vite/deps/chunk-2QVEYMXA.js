@@ -5135,6 +5135,8 @@ var _MatInternalFormField = __MatInternalFormField;
 })();
 
 export {
+  Directionality,
+  BidiModule,
   Platform,
   getSupportedInputTypes,
   normalizePassiveListenerOptions,
@@ -5143,6 +5145,13 @@ export {
   getRtlScrollAxisType,
   _getEventTarget,
   _isTestEnvironment,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  _isNumberValue,
+  coerceArray,
+  coerceCssPixelValue,
+  coerceElement,
+  ObserversModule,
   TAB,
   ENTER,
   ESCAPE,
@@ -5153,13 +5162,6 @@ export {
   DOWN_ARROW,
   A,
   hasModifierKey,
-  coerceBooleanProperty,
-  coerceNumberProperty,
-  _isNumberValue,
-  coerceArray,
-  coerceCssPixelValue,
-  coerceElement,
-  ObserversModule,
   addAriaReferencedId,
   removeAriaReferencedId,
   AriaDescriber,
@@ -5167,8 +5169,6 @@ export {
   LiveAnnouncer,
   FocusMonitor,
   A11yModule,
-  Directionality,
-  BidiModule,
   VERSION2 as VERSION,
   AnimationCurves,
   AnimationDurations,
@@ -5215,4 +5215,4 @@ export {
   MatRippleLoader,
   _MatInternalFormField
 };
-//# sourceMappingURL=chunk-E3KIQG2R.js.map
+//# sourceMappingURL=chunk-2QVEYMXA.js.map

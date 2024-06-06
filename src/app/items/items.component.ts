@@ -113,7 +113,6 @@ export class ItemsComponent {
     } else {
       console.log("ide lehet kellene csinálni vaalami popupot ha lesz idő :)");
     }
-    this.itemForm.reset();
   }
   async discardItem() {
 

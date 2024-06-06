@@ -84,6 +84,7 @@ import { AuthService } from '../services/auth.service';
         next: (users) =>{
           this.users = users;
           this.dataSource.data = this.users;
+          console.log(this.users);
         }
       }
         // (data) => {

@@ -1,4 +1,5 @@
 import { AuthUserController } from "./controller/auth-user.controller";
+import { MongoService } from "./controller/base.controller";
 
 import { connectToMongoDB } from "./data-source";
 import { AuthUser } from "./entity/AuthUser";
